@@ -55,11 +55,11 @@ def register():
         if code not in keys:
             break
 
-    print(code)
     redis.json().set(code, "$", [username, password, email], 3600)
+
     return (
         "Please confirm your email to finish the registration"
-        + f": http://localhost:5000/confirm_email/{username}/{code}"
+        # + f": http://localhost:5000/confirm_email/{username}/{code}"
     )
 
 
@@ -112,6 +112,8 @@ def add_to_database():
     )
     redis.json().numincrby(username, "$.next_id", 1)
 
+    return ""
+
 
 @app.route("/remove_from_database", methods=["post"])
 @needs_authorization
@@ -130,7 +132,7 @@ def get_entry_ids():
     username = request.authorization["username"]
     objkeys = redis.json().objkeys(username, "$.passwords")[0]
     entry_ids = [key for key in filter(lambda x: x.isdigit(), objkeys)]
-    print(entry_ids)
+
     return entry_ids
 
 
@@ -140,7 +142,7 @@ def get_entry():
     username = request.authorization["username"]
     entry_id = request.json["id"]
     entry = redis.json().get(username, f"$.passwords.{entry_id}")[0]
-    print(entry)
+
     return entry
 
 
@@ -154,7 +156,6 @@ def get_all():
     for entry_id in entry_ids:
         entries.append(redis.json().get(
             username, f"$.passwords.{entry_id}")[0])
-    print(entries)
 
     return entries
 
