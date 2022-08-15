@@ -10,7 +10,6 @@ redis = Redis(decode_responses=True)
 
 
 def needs_authorization(func):
-
     @wraps(func)
     def wrapper():
         if request.authorization:
@@ -107,8 +106,7 @@ def add_to_database():
     redis.json().set(
         username,
         f"$.passwords.{entry_id}",
-        [request.json[key]
-            for key in ["website", "username", "password"]],
+        [request.json[key] for key in ["website", "username", "password"]],
     )
     redis.json().numincrby(username, "$.next_id", 1)
 
@@ -131,7 +129,9 @@ def remove_from_database():
 def get_entry_ids():
     username = request.authorization["username"]
     objkeys = redis.json().objkeys(username, "$.passwords")[0]
-    entry_ids = [key for key in filter(lambda x: x.isdigit(), objkeys)]
+    entry_ids = [
+        key for key in map(lambda x: int(x), filter(lambda x: x.isdigit(), objkeys))
+    ]
 
     return entry_ids
 
@@ -154,8 +154,7 @@ def get_all():
     entry_ids = [key for key in filter(lambda x: x.isdigit(), objkeys)]
     entries = []
     for entry_id in entry_ids:
-        entries.append(redis.json().get(
-            username, f"$.passwords.{entry_id}")[0])
+        entries.append(redis.json().get(username, f"$.passwords.{entry_id}")[0])
 
     return entries
 
