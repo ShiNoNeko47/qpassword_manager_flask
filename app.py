@@ -123,6 +123,8 @@ def remove_from_database():
         redis.json().set(username, f"$.passwords._{entry_id}", entry[0])
         redis.json().delete(username, f"$.passwords.{entry_id}")
 
+    return ""
+
 
 @app.route("/get_entry_ids", methods=["post"])
 @needs_authorization
