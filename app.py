@@ -58,7 +58,7 @@ def register():
 
     return (
         "Please confirm your email to finish the registration"
-        # + f": http://localhost:5000/confirm_email/{username}/{code}"
+        + f": http://localhost:5000/confirm_email/{username}/{code}"
     )
 
 
@@ -122,6 +122,24 @@ def remove_from_database():
     if entry:
         redis.json().set(username, f"$.passwords._{entry_id}", entry[0])
         redis.json().delete(username, f"$.passwords.{entry_id}")
+
+    return ""
+
+
+@app.route("/update_entry", methods=["post"])
+@needs_authorization
+def update_entry():
+    username = request.authorization["username"]
+    entry_id = request.json["id"]
+    entry = redis.json().get(username, f"$.passwords.{entry_id}")
+    if entry:
+        redis.json().set(username, f"$.passwords._{entry_id}", entry[0])
+        # redis.json().delete(username, f"$.passwords.{entry_id}")
+        redis.json().set(
+            username,
+            f"$.passwords.{entry_id}",
+            [request.json[key] for key in ["website", "username", "password"]],
+        )
 
     return ""
 
