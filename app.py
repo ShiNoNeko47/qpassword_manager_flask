@@ -55,11 +55,9 @@ def register():
             break
 
     redis.json().set(code, "$", [username, password, email], 3600)
+    print(f"/confirm_email/{username}/{code}", flush=True)
 
-    return (
-        "Please confirm your email to finish the registration"
-        + f": http://localhost:5000/confirm_email/{username}/{code}"
-    )
+    return "Please confirm your email to finish the registration"
 
 
 @app.route("/confirm_email/<username>/<code>")

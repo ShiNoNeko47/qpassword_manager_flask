@@ -6,4 +6,5 @@ It uses redis with redisjson as the database, so to use it you would have to set
 To start the server just run app.py.
 
 ## TODO
+ - mail verification
  - code reformatting
